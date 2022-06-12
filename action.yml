@@ -1,0 +1,29 @@
+name: Install OpenSCAD nightly
+description: 'Installs the OpenSCAD cli for use in workflows'
+branding:
+  icon: box
+  color: gray-dark
+
+outputs:
+  version:
+    description: 'The OpenSCAD version that was installed'
+    value: ${{ steps.set-output.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: install
+      id: install-openscad
+      run: |
+        sudo apt-get -y -qq install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates xvfb wget
+        echo "deb https://download.opensuse.org/repositories/home:/t-paul/xUbuntu_20.04/ ./" | sudo tee -a /etc/apt/sources.list.d/openscad.list
+        wget -qO - https://files.openscad.org/OBS-Repository-Key.pub | sudo apt-key add -
+        sudo apt-get update -qq
+        sudo apt-get install -y openscad-nightly
+      shell: bash
+
+
+    - id: set-output
+      run: echo "::set-output name=version::$(openscad-nightly --version)"
+      shell: bash
